@@ -1,8 +1,12 @@
 package com.totalcross.sample.badapple;
 
+import totalcross.ui.Button;
 import totalcross.ui.Label;
 import totalcross.ui.MainWindow;
+import totalcross.ui.event.ControlEvent;
+import totalcross.ui.event.PressListener;
 import totalcross.ui.event.UpdateListener;
+import totalcross.ui.gfx.Color;
 import totalcross.ui.gfx.Graphics;
 
 import totalcross.io.ByteArrayStream;
@@ -21,13 +25,49 @@ public class BadAppleTC extends MainWindow {
     int frames = 0;
 
     Label fps;
+    Button start, stop, continueBtn;
+
+    boolean stopAnimation = false;
 
     @Override
     public void initUI() {
 
         fps = new Label("Number of FPS");
+        start = new Button("Start");
+        stop = new Button("Stop");
+        continueBtn = new Button("Continue");
 
         add(fps, RIGHT - 8, TOP + 8);
+        add(start, RIGHT - 40, AFTER + 8, SAME, PREFERRED);
+        add(stop, SAME, AFTER + 8, SAME, PREFERRED);
+        add(continueBtn, SAME, AFTER + 8, SAME, PREFERRED);
+
+        start.addPressListener(new PressListener() {
+
+            @Override
+            public void controlPressed(ControlEvent e) {
+                i = 1;
+                stopAnimation = false;
+            }
+
+        });
+
+        stop.addPressListener(new PressListener() {
+
+            @Override
+            public void controlPressed(ControlEvent e) {
+                stopAnimation = true;
+            }
+
+        });
+        continueBtn.addPressListener(new PressListener() {
+
+            @Override
+            public void controlPressed(ControlEvent e) {
+                stopAnimation = false;
+            }
+
+        });
 
         addUpdateListener(new UpdateListener() {
 
@@ -57,7 +97,9 @@ public class BadAppleTC extends MainWindow {
             i = 0;
             return;
         } else {
-            i++;
+
+            if (!stopAnimation)
+                i++;
         }
 
         fileName = "data/out (" + i + ").txt";
