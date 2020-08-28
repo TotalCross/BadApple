@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.totalcross.sample.badapple</groupId>
-    <artifactId>BadAppleTC</artifactId>
+    <groupId>badapple</groupId>
+    <artifactId>BadApple</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>BadAppleTC</name>
+    <name>BadApple</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

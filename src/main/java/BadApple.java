@@ -1,86 +1,98 @@
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.util.StringTokenizer;
-import java.io.FileReader;
-import java.io.BufferedReader;
-import java.io.File;
-import java.applet.Applet;
-import java.applet.AudioClip;
+import totalcross.ui.Label;
+import totalcross.ui.MainWindow;
+import totalcross.ui.event.UpdateListener;
+import totalcross.ui.gfx.Graphics;
 
-class BadApple extends JFrame {
-	private static AudioClip music;
-	private static javax.swing.Timer timer;
-	private Listener listener;
+import totalcross.io.ByteArrayStream;
+import totalcross.io.LineReader;
+import totalcross.sys.Convert;
+import totalcross.sys.Settings;
+import totalcross.sys.Vm;
 
-	public BadApple() {
-		music = Applet
-				.newAudioClip(this.getClass().getResource("BadApple.wav"));
-		listener = new Listener();
-		getContentPane().add(listener);
-		timer = new javax.swing.Timer(32, listener);
+public class BadApple extends MainWindow {
 
-		setTitle("BadApple");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(650, 510);
-		setVisible(true);
-	}
+    public BadApple() {
+        setUIStyle(Settings.MATERIAL_UI);
+    }
 
-	public static void main(String[] args) {
-		new BadApple();
-		music.play();
-		timer.start();
-	}
+    long timestamp = 0;
+    int frames = 0;
 
-	class Listener extends JPanel implements ActionListener {
-		private String fileName;
-		private int i = 1;
+    Label fps;
 
-		public void actionPerformed(ActionEvent e) {
-			repaint();
-		}
+    @Override
+    public void initUI() {
 
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g);
+        fps = new Label("Number of FPS");
 
-			if (i == 6569) {
-				System.exit(0);
-			}
-			else {
-				i++;
-			}
+        add(fps, RIGHT - 8, TOP + 8);
 
-			fileName = "data/out (" + i + ").txt";
-			FileReader fr = null;
-			BufferedReader br = null;
-			try {
-				fr = new FileReader(new File(this.getClass().getResource(fileName).toURI()));
-				br = new BufferedReader(fr);
-				String temp;
+        addUpdateListener(new UpdateListener() {
 
-				int j = 0;
+            @Override
+            public void updateListenerTriggered(int elapsedMilliseconds) {
+                repaintNow();
+                ++frames;
+                timestamp += elapsedMilliseconds;
+                if (timestamp > 1000) {
+                    fps.setText(frames + " FPS");
+                    frames = 0;
+                    timestamp = 0;
+                }
+            }
 
-				while ((temp = br.readLine()) != null) {
-					StringTokenizer st = new StringTokenizer(temp);
-					while (st.hasMoreTokens()) {
-						int start = Integer.parseInt(st.nextToken());
-						int end = Integer.parseInt(st.nextToken());
-						g.drawLine(start, j, end, j);
-					}
-					j++;
-				}
-			} catch (Exception e) {
-				System.out.println(e);
-			} finally {
-				try {
-					fr.close();
-					br.close();
-				} catch (Exception e) {
-					System.out.println(e);
-				}
-			}
-		}
-	}
+        });
+    }
+
+    private String fileName;
+    private int i = 1;
+
+    @Override
+    public void onPaint(Graphics g) {
+        super.onPaint(g);
+
+        if (i == 6569) {
+            i = 0;
+            return;
+        } else {
+            i++;
+        }
+
+        fileName = "data/out (" + i + ").txt";
+
+        // FileReader fr = null;
+        // BufferedReader br = null;
+        LineReader reader = null;
+        ByteArrayStream bas = null;
+        try {
+
+            bas = new ByteArrayStream(Vm.getFile(fileName));
+            reader = new LineReader(bas);
+
+            String temp;
+
+            int j = 0;
+
+            while ((temp = reader.readLine()) != null) {
+                String[] data = temp.split("\s");
+                int w = 0;
+                while (w < data.length) {
+                    int start = Convert.toInt(data[w++]);
+                    int end = Convert.toInt(data[w++]);
+                    g.drawLine(start, j, end, j);
+                }
+
+                j++;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                bas.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
