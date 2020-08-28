@@ -116,7 +116,7 @@ public class BadApple extends MainWindow {
             int j = 0;
 
             while ((temp = reader.readLine()) != null) {
-                String[] data = temp.split("\s");
+                String[] data = Convert.tokenizeString(temp, " ");
                 int w = 0;
                 while (w < data.length) {
                     int start = Convert.toInt(data[w++]);
