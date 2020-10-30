@@ -6,7 +6,6 @@ import totalcross.ui.MainWindow;
 import totalcross.ui.event.ControlEvent;
 import totalcross.ui.event.PressListener;
 import totalcross.ui.event.UpdateListener;
-import totalcross.ui.gfx.Color;
 import totalcross.ui.gfx.Graphics;
 
 import totalcross.io.ByteArrayStream;
